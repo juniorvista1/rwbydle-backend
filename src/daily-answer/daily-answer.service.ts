@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Character } from '../character/character.entity';
 import { Weapon } from '../weapon/weapon.entity';
+import { Quote } from 'src/quote/quote.entity';
 // Import your entities
 
 @Injectable()
@@ -12,6 +13,8 @@ export class DailyAnswerService {
     private charactersRepository: Repository<Character>,
     @InjectRepository(Weapon)
     private weaponsRepository: Repository<Weapon>,
+    @InjectRepository(Quote)
+    private quotesRepository: Repository<Quote>,
   ) {}
 
   private getDailyRandomSeed(): string {
@@ -36,6 +39,7 @@ export class DailyAnswerService {
     const seed = this.getDailyRandomSeed();
     const characters = await this.charactersRepository.find();
     const weapons = await this.weaponsRepository.find();
+    const quotes = await this.quotesRepository.find();
 
     const randomIndexCharacter = Math.floor(
       this.seededRandom(seed + 'character') * characters.length,
@@ -43,12 +47,14 @@ export class DailyAnswerService {
     const randomIndexWeapon = Math.floor(
       this.seededRandom(seed + 'weapon') * weapons.length,
     );
-
-    console.log("Returning daily answer", characters[randomIndexCharacter], weapons[randomIndexWeapon])
+    const randomIndexQuote = Math.floor(
+      this.seededRandom(seed + 'weapon') * quotes.length,
+    );
 
     return {
       character: characters[randomIndexCharacter],
       weapon: weapons[randomIndexWeapon],
+      quote: quotes[randomIndexQuote],
     };
   }
 
